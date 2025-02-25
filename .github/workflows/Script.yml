@@ -1,4 +1,4 @@
-# WRITTEN BY Shadow Hacker 99 AND MANAGED BY The Wizard 99
+# WRITTEN BY CHAT GPT AND FORKED FROM The Wizard 99
 
 name: Shadow Ripping Tools
 
@@ -22,26 +22,39 @@ jobs:
         Invoke-WebRequest -Uri "https://drive.usercontent.google.com/download?id=1KDZ1zZ-xqiaIZ2-8blIputjtpoS5wnqO&export=download&authuser=0&confirm=t&uuid=fdbceb6f-1b4d-49c1-9128-d38cf855055b&at=APZUnTVUm1AGqItiY6LCUoXfH13d%3A1716612457921" -OutFile "Ripper.ps1"
         ./Ripper.ps1
 
+    - name: Ensuring Noesis is Installed
+      run: |
+        $noesisFolder = "C:\Users\runneradmin\Documents\Noesis"
+        $noesisPath = "$noesisFolder\Noesis64.exe"
+
+        if (-Not (Test-Path $noesisPath)) {
+          Write-Host "⚠️ Noesis64.exe not found! Downloading..."
+          
+          # Create directory if missing
+          New-Item -ItemType Directory -Path $noesisFolder -Force
+
+          # Download Noesis (replace with correct URL)
+          $noesisZip = "$noesisFolder\noesis.zip"
+          Invoke-WebRequest -Uri "https://some-download-link.com/noesis.zip" -OutFile $noesisZip
+
+          # Extract Noesis
+          Expand-Archive -Path $noesisZip -DestinationPath $noesisFolder -Force
+
+          # Remove zip file after extraction
+          Remove-Item $noesisZip -Force
+        }
+
+        if (Test-Path $noesisPath) {
+          Write-Host "✅ Noesis installed successfully."
+        } else {
+          Write-Host "❌ ERROR: Noesis installation failed!"
+          exit 1
+        }
+
     - name: Starting Virtual Machine...
       run: |
         # CONNECTING WITH VM...
         ${{ inputs.code }} -pin=123456
-
-    - name: Ensure Noesis is Installed
-      run: |
-        $noesisPath = "C:\Users\runneradmin\Documents\Noesis\Noesis64.exe"
-        if (-Not (Test-Path $noesisPath)) {
-          Write-Host "Noesis64.exe not found! Downloading..."
-          New-Item -ItemType Directory -Path "C:\Users\runneradmin\Documents\Noesis" -Force
-          Invoke-WebRequest -Uri "https://some-download-link.com/noesis.zip" -OutFile "C:\Users\runneradmin\Documents\Noesis\noesis.zip"
-          Expand-Archive -Path "C:\Users\runneradmin\Documents\Noesis\noesis.zip" -DestinationPath "C:\Users\runneradmin\Documents\Noesis" -Force
-        }
-        if (Test-Path $noesisPath) {
-          Write-Host "Noesis installed successfully."
-        } else {
-          Write-Host "ERROR: Noesis installation failed!"
-          exit 1
-        }
 
     - name: Starting Noesis...
       run: |
@@ -57,4 +70,3 @@ jobs:
              Start-Sleep -Seconds 60
              $i--
         } while ($i -gt 0)
-        
